@@ -27,9 +27,9 @@
                                         <i class="el-icon-arrow-down el-icon--right"></i>
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
-                                        <el-dropdown-item>黄金糕</el-dropdown-item>
+                                        <el-dropdown-item @click.native="editCardNameClick(val)">修改名称</el-dropdown-item>
                                         <el-dropdown-item>狮子头</el-dropdown-item>
-                                        <el-dropdown-item @click.native="delCard(val)">删除</el-dropdown-item>
+                                        <el-dropdown-item @click.native="delCardClick(val)">删除</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
 
@@ -70,8 +70,27 @@
                 </div>
             </div>
         </div>
+        <!-- 新增卡片 -->
         <add-card :add-card-visi="addCardVisi" :add-card-form="addCardForm" :dialog-title="addCardTitle"
             @addCardDialog="addCardDialog"></add-card>
+        <!-- 修改卡片名称 -->
+        <el-dialog title="标题" :visible.sync="editCardNameVisi" :close-on-click-modal="false" :close-on-press-escape="false"
+            :before-close="editCardNameVisiDialog" width="30%">
+            <el-form class="formBody" ref="editCardNameForm" :model="editCardNameForm" :rules="editCardNameFormRules"
+                label-width="80px" label-position="top">
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="标题" prop="name">
+                            <el-input v-model="editCardNameForm.name" placeholder="请输入标题" />
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="editCardNameVisiDialog">取 消</el-button>
+                <el-button type="primary" @click="editCardNameSubmit('editCardNameForm')">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -106,6 +125,17 @@ export default {
                 date: '',
                 priority: '',
                 owner_ids: ''
+            },
+            editCardNameVisi: false,// 是否显示修改卡片弹窗
+            // 修改卡片表单
+            editCardNameForm: {
+                name: '',
+            },
+            // 修改卡片表单验证规则
+            editCardNameFormRules: {
+                name: [
+                    { required: true, message: '请输入标题', trigger: 'blur' }
+                ]
             }
         }
     },
@@ -173,44 +203,101 @@ export default {
         addCardDialog() {
             this.addCardVisi = false
         },
-        // 卡片完成与未完成
+        // 卡片完成与重新开始
         cardStatusChange(val, item) {
-            const params = {
-                cmd: "card_complete",
-                sid: getSessionStorage('token'),
-                data: {
-                    card_id: item.card_id
+            console.log(val);
+            if (val) {
+                const params = {
+                    cmd: "card_complete",
+                    sid: getSessionStorage('token'),
+                    data: {
+                        card_id: item.card_id
+                    }
                 }
+                apiPost('/V1/index_dev.php', {
+                    data: {
+                        json: JSON.stringify(params)
+                    }
+                }).then((res) => {
+                    this.queryTableList()
+                })
+            } else {
+                const params = {
+                    cmd: "card_restart",
+                    sid: getSessionStorage('token'),
+                    data: {
+                        card_id: item.card_id
+                    }
+                }
+                apiPost('/V1/index_dev.php', {
+                    data: {
+                        json: JSON.stringify(params)
+                    }
+                }).then((res) => {
+                    this.queryTableList()
+                })
             }
-            apiPost('/V1/index_dev.php', {
-                data: {
-                    json: JSON.stringify(params)
+        },
+        // 显示修改卡片名称弹窗
+        editCardNameClick(val) {
+            this.editCardNameVisi = true
+            this.editCardNameForm.card_id = val.card_id
+            this.editCardNameForm.name = val.name
+        },
+        // 隐藏修改卡片名称弹窗
+        editCardNameVisiDialog() {
+            this.editCardNameVisi = false
+        },
+        // 提交修改卡片名称表单
+        editCardNameSubmit(formName) {
+            this.$refs[formName].validate(valid => {
+                if (valid) {
+                    const params = {
+                        cmd: "card_nameset",
+                        sid: getSessionStorage('token'),
+                        data: {
+                            card_id: this.editCardNameForm.card_id,
+                            name: this.editCardNameForm.name
+                        }
+                    }
+                    apiPost('/V1/index_dev.php', {
+                        data: {
+                            json: JSON.stringify(params)
+                        }
+                    }).then((res) => {
+                        this.queryTableList()
+                        this.editCardNameVisiDialog()
+                    })
+                } else {
+                    return false
                 }
-            }).then((res) => {
-                this.addmoduleVisi = false
-                this.queryTableList()
-                this.$refs[formName].resetFields()
             })
         },
         // 删除卡片
-        delCard(val) {
-            const params = {
-                cmd: "card_delete",
-                sid: getSessionStorage('token'),
-                data: {
-                    card_id: val.card_id
+        delCardClick(val) {
+            this.$confirm('确定删除该卡片?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                const params = {
+                    cmd: "card_delete",
+                    sid: getSessionStorage('token'),
+                    data: {
+                        card_id: val.card_id
+                    }
                 }
-            }
-            apiPost('/V1/index_dev.php', {
-                data: {
-                    json: JSON.stringify(params)
-                }
-            }).then((res) => {
-                this.queryTableList()
-                this.$message({
-                    message: '删除成功',
-                    type: 'success'
-                });
+                apiPost('/V1/index_dev.php', {
+                    data: {
+                        json: JSON.stringify(params)
+                    }
+                }).then((res) => {
+                    this.queryTableList()
+                    this.$message({
+                        message: '删除成功',
+                        type: 'success'
+                    });
+                })
             })
         }
     }
