@@ -1,0 +1,122 @@
+@import './variables.scss';
+@import './mixin.scss';
+@import './transition.scss';
+@import './element-ui.scss';
+@import './sidebar.scss';
+@import url("http://at.alicdn.com/t/c/font_4206805_5wgmr3ubceb.css");
+
+body {
+  height: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+}
+
+label {
+  font-weight: 700;
+}
+
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+#app {
+  height: 100%;
+}
+
+*,
+*:before,
+*:after {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+  list-style: none;
+}
+
+a:focus,
+a:active {
+  outline: none;
+}
+
+a,
+a:focus,
+a:hover {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+div:focus {
+  outline: none;
+}
+
+.clearfix {
+  &:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+}
+
+// main-container global css
+.app-container {
+  padding: 0 20px;
+}
+
+.main-wrapper {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  margin-bottom: 15px;
+
+  .main-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 10px;
+    height: 45px;
+    line-height: 45px;
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    font-size: 15px;
+    background-color: #f1f2f7;
+  }
+
+  .main-content {
+    border-radius: 5px;
+    overflow-y: auto;
+    padding: 14px 10px;
+    min-height: 100px;
+
+    .md4 {
+      margin-right: 10px;
+    }
+
+    .param {
+      padding-top: 50px !important;
+    }
+  }
+}
+
+
+.columnOptionBtn {
+  display: flex;
+  justify-content: space-around;
+}
+
+// 分页
+.el-pagination {
+  display: flex;
+  justify-content: flex-end;
+  padding: 5px;
+}
+
+.formBody {
+  .el-form-item {
+    margin-right: 22px;
+  }
+
+}
