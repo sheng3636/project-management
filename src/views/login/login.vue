@@ -33,8 +33,8 @@ export default {
   data() {
     return {
       loginForm: {
-        username: '19979911081',
-        password: 'asd123'
+        username: '17721064192',
+        password: '4192'
       },
       loginRules: {
         username: [
@@ -64,9 +64,6 @@ export default {
       } else {
         this.passwordType = 'password'
       }
-      this.$nextTick(() => {
-        this.$refs.password.focus()
-      })
     },
     // 登录
     submitForm() {
@@ -81,7 +78,7 @@ export default {
               pwd: this.loginForm.password
             }
           }
-          apiPost('/V1/index_dev.php', {
+          apiPost('/V2/index_prod.php', {
             data: {
               json: JSON.stringify(params)
             }

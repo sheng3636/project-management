@@ -29,12 +29,11 @@
         <span class="title">用户列表</span>
       </div>
       <!--列表-->
-      <el-table :data="tableList" highlight-current-row style="width: 100%;" border>
+      <el-table :data="tableList" highlight-current-row height="530" border>
         <el-table-column type="index" width="65" label="序号" align="center" />
-        <el-table-column prop="name" align="center" width="160" label="姓名" />
-        <el-table-column prop="phone" align="center" width="160" label="手机号码" />
+        <el-table-column prop="name" align="center" label="姓名" />
+        <el-table-column prop="phone" align="center" label="手机号码" />
         <el-table-column prop="dept" align="center" label="部门" :show-overflow-tooltip="true" />
-        <el-table-column prop="gender" align="center" width="100" label="性别" />
         <el-table-column prop="email" align="center" label="邮箱" />
       </el-table>
       <!--分页-->
@@ -64,13 +63,13 @@ export default {
     // 获取用户列表
     queryTableList() {
       const params = {
-        cmd: "user_list",
+        cmd: 'user_list',
         sid: getSessionStorage('token'),
         data: {
-          name: this.queryParams.name
+          keyword: this.queryParams.name
         }
       }
-      apiPost('/V1/index_dev.php', {
+      apiPost('/V2/index_prod.php', {
         data: {
           json: JSON.stringify(params)
         }

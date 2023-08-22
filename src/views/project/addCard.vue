@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="addCardTitle" :visible.sync="addCardVisi" :close-on-click-modal="false"
+    <el-dialog title="创建卡片" :visible.sync="addCardVisi" v-if="addCardVisi" :close-on-click-modal="false"
         :close-on-press-escape="false" :before-close="addCardDialog" width="40%">
         <el-form class="formBody" ref="addCardForm" :model="addCardForm" :rules="addCardFormRules" label-width="80px"
             label-position="top">
@@ -10,9 +10,14 @@
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                    <el-form-item label="项目时间" prop="date">
-                        <el-date-picker v-model="addCardForm.date" type="daterange" range-separator="至"
-                            start-placeholder="开始日期" end-placeholder="结束日期">
+                    <el-form-item label="开始时间" prop="date">
+                        <el-date-picker v-model="addCardForm.begin_time" type="date" value-format="yyyy-MM-dd" placeholder="请选择开始时间" style="width: 100%;">
+                        </el-date-picker>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="结束时间" prop="date">
+                        <el-date-picker v-model="addCardForm.end_time" type="date" value-format="yyyy-MM-dd" placeholder="请选择结束时间" style="width: 100%;">
                         </el-date-picker>
                     </el-form-item>
                 </el-col>
@@ -26,7 +31,7 @@
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="负责人" prop="owner_ids">
-                        <el-select v-model="addCardForm.owner_ids" placeholder="请选择负责人" style="width: 100%;">
+                        <el-select v-model="addCardForm.owner_ids" multiple placeholder="请选择负责人" style="width: 100%;">
                             <el-option v-for="(item, index) in userOpts" :key="index" :label="item.name"
                                 :value="item.uid"></el-option>
                         </el-select>
@@ -49,16 +54,16 @@ export default {
             priorityOpts: [
                 {
                     name: '无',
-                    value: 0
+                    value: '0'
                 }, {
                     name: '低',
-                    value: 1
+                    value: '1'
                 }, {
                     name: '中',
-                    value: 2
+                    value: '2'
                 }, {
                     name: '高',
-                    value: 3
+                    value: '3'
                 }
             ],
             userOpts: [],// 用户列表
@@ -71,10 +76,6 @@ export default {
         }
     },
     props: {
-        addCardTitle: {
-            type: String,
-            defalut: '新增卡片'
-        },
         addCardVisi: {
             type: Boolean,
             defalut: false
@@ -97,7 +98,7 @@ export default {
                     name: ''
                 }
             }
-            apiPost('/V1/index_dev.php', {
+            apiPost('/V2/index_prod.php', {
                 data: {
                     json: JSON.stringify(params)
                 }
@@ -122,13 +123,13 @@ export default {
                             project_id: this.$route.params.id,
                             module_id: this.addCardForm.module_id,
                             name: this.addCardForm.name,
-                            begin_time: this.addCardForm.date[0],
-                            end_time: this.addCardForm.date[1],
+                            begin_time: this.addCardForm.begin_time,
+                            end_time: this.addCardForm.end_time,
                             priority: this.addCardForm.priority,
-                            owner_ids: this.addCardForm.owner_ids,
+                            owner_ids: this.addCardForm.owner_ids.join(';'),
                         }
                     }
-                    apiPost('/V1/index_dev.php', {
+                    apiPost('/V2/index_prod.php', {
                         data: {
                             json: JSON.stringify(params)
                         }

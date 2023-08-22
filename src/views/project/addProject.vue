@@ -1,6 +1,6 @@
 <template>
-  <el-dialog :title="addEditTitle" :visible.sync="addEditVisi" :close-on-click-modal="false"
-    :close-on-press-escape="false" :before-close="dialogClose" width="45%">
+  <el-dialog title="新建项目" :visible.sync="addEditVisi" :close-on-click-modal="false"
+    :close-on-press-escape="false" :before-close="dialogClose" width="40%">
     <el-form class="formBody" ref="addEditForm" :model="addEditForm" :rules="addEditFormRules" label-width="80px"
       label-position="top">
       <el-row>
@@ -40,10 +40,6 @@ export default {
     }
   },
   props: {
-    addEditTitle: {
-      type: String,
-      defalut: '新增项目'
-    },
     addEditVisi: {
       type: Boolean,
       defalut: false
@@ -73,7 +69,7 @@ export default {
               descript: this.addEditForm.descript
             }
           }
-          apiPost('/V1/index_dev.php', {
+          apiPost('/V2/index_prod.php', {
             data: {
               json: JSON.stringify(params)
             }

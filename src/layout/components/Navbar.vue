@@ -5,7 +5,7 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <span>{{userInfo.name}}</span>
+          <span>{{userInfo.name}}，欢迎您</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -115,7 +115,7 @@ export default {
               new_pwd: this.editPassForm.new_pwd
             }
           }
-          apiPost('/V1/index_dev.php', {
+          apiPost('/V2/index_prod.php', {
             data: {
               json: JSON.stringify(params)
             }
@@ -213,6 +213,7 @@ export default {
         }
 
         .el-icon-caret-bottom {
+          margin-left: 5px;
           cursor: pointer;
           font-size: 12px;
         }
