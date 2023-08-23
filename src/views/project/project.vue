@@ -55,9 +55,8 @@
           <template slot-scope="scope">
             <div class="columnOptionBtn">
               <el-button plain type="text" size="mini">
-                <router-link :to="`/project/projectDashboard/${scope.row.project_id}`">进入</router-link>
+                <router-link :to="`/project/layout/billboard/${scope.row.project_id}?projectName=${scope.row.name}`">进入</router-link>
               </el-button>
-              <el-button plain type="text" size="mini" @click="showEditProjectDialog(scope.row)">编辑</el-button>
             </div>
           </template>
         </el-table-column>
@@ -67,8 +66,6 @@
         @size-change="handleSizeChange" @current-change="handleCurrentChange" />
     </div>
     <add-project :add-edit-visi="addEditVisi" :add-edit-form="addEditForm" @dialogClose="dialogClose"></add-project>
-    <edit-project :edit-project-visi="editProjectVisi" :edit-project-form="editProjectForm"
-      @editProjectClose="editProjectClose"></edit-project>
   </div>
 </template>
 
@@ -76,11 +73,9 @@
 import { apiPost } from '@/utils/request' // 引入请求方法
 import { getSessionStorage } from '@/utils/index'
 import addProject from './addProject'
-import editProject from './editProject.vue'
 export default {
   components: {
-    addProject,
-    editProject
+    addProject
   },
   data() {
     return {
@@ -113,12 +108,6 @@ export default {
         descript: ''
       },
       addEditVisi: false, // 是否弹出新增编辑弹窗
-      // 编辑项目表单
-      editProjectForm: {
-        name: '',
-        descript: ''
-      },
-      editProjectVisi: false // 是否弹出编辑项目弹窗
     }
   },
   mounted() {
@@ -155,31 +144,6 @@ export default {
     dialogClose() {
       this.addEditVisi = false
     },
-
-
-    // 弹出新增弹窗
-    showEditProjectDialog(val) {
-      this.editProjectVisi = true
-      this.editProjectForm = {
-        project_id: val.project_id,
-        name: val.name,
-        descript: val.descript,
-        begin_time: val.begin_time,
-        end_time: val.end_time,
-        Creator: val.Creator,
-        create_time: val.create_time,
-        status: val.status
-      }
-    },
-    // 关闭新增编辑弹窗
-    editProjectClose() {
-      this.editProjectVisi = false
-    },
-
-
-
-
-
     // pageSize 改变时会触发
     handleSizeChange(val) {
       this.queryParams.num = val

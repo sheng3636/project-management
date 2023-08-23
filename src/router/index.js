@@ -49,37 +49,79 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/dashboard'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
-    }]
+    redirect: '/project/list',
+    // children: [{
+    //   path: 'dashboard',
+    //   name: 'Dashboard',
+    //   component: () => import('@/views/dashboard/dashboard'),
+    //   meta: { title: 'Dashboard', icon: 'dashboard' }
+    // }]
   },
   {
     path: '/project',
     component: Layout,
     children: [
       {
-        path: 'project',
-        name: 'Member',
+        path: 'list',
+        name: 'Project',
         component: () => import('@/views/project/project'),
         meta: {
           title: '项目',
           icon: 'project'
-        }
+        },
       },
       {
-        path: 'projectDashboard/:id(\\d+)',
-        name: 'ProjectDashboard',
-        component: () => import('@/views/project/projectDashboard'),
+        path: 'layout',
+        name: 'ProjectLayout',
+        component: () => import('@/views/project/projectLayout'),
         meta: {
-          title: '项目看板',
-          activeMenu: '/project/project'
+          activeMenu: '/project/list'
         },
-        hidden: true
-      }
+        hidden: true,
+        children: [
+          {
+            path: 'billboard/:id(\\d+)',
+            name: 'billboard',
+            component: () => import('@/views/project/billboard'),
+            meta: {
+              title: '项目看板',
+              activeMenu: '/project/list'
+            },
+            hidden: true
+          },
+          {
+            path: 'dashboard/:id(\\d+)',
+            name: 'Dashboard',
+            component: () => import('@/views/project/dashboard'),
+            meta: {
+              title: '项目报表',
+              activeMenu: '/project/list'
+            },
+            hidden: true
+          },
+          {
+            path: 'documents/:id(\\d+)',
+            name: 'Documents',
+            component: () => import('@/views/project/documents'),
+            meta: {
+              title: '项目文档',
+              activeMenu: '/project/list'
+            },
+            hidden: true
+          },
+          {
+            path: 'projectDetail/:id(\\d+)',
+            name: 'ProjectDetail',
+            component: () => import('@/views/project/projectDetail'),
+            meta: {
+              title: '项目设置',
+              activeMenu: '/project/list'
+            },
+            hidden: true
+          }
+        ]
+      },
+
     ]
   },
   {

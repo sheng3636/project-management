@@ -274,9 +274,10 @@ export default {
                 descript: val.descript,
                 priority: val.priority,
                 owner_ids: owner_ids,
-                owner_idsLength:owner_ids.length,
+                owner_idsLength: owner_ids.length,
                 joiner_ids: joiner_ids,
-                joiner_idsLength:joiner_ids.length
+                joiner_idsLength: joiner_ids.length,
+                doc_list: val.doc_list
             }
             console.log(this.editCardForm);
         },
@@ -447,5 +448,5 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import './projectDashboard';
+@import './billboard';
 </style>

@@ -55,6 +55,29 @@
                         </el-select>
                     </el-form-item>
                 </el-col>
+                <el-col :span="24">
+                    <el-form-item label="关联文档">
+                        <el-upload ref="upload" action="" :http-request="handleUpload">
+                            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                            <div slot="tip" class="el-upload__tip">文件大小不超过50M</div>
+                        </el-upload>
+                        <ul class="field-list">
+                            <li class="field-attach" v-for="(item,index) in editCardForm.doc_list" :key="index">
+                                <img :src="require(`../../assets/${docuType(item.name)}.png`)" class="thumb">
+                                <div>
+                                    <div class="title">{{item.name}}</div>
+                                    <div class="creator">{{item.Creator.name}}</div>
+                                    <div class="creattime">{{item.create_time}}</div>
+                                </div>
+                                <div class="action">
+                                    <span class="icon">预览</span>
+                                    <span class="icon">下载</span>
+                                    <span class="icon" @click="handleRemove(item)">删除</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </el-form-item>
+                </el-col>
             </el-row>
         </el-form>
     </el-dialog>
@@ -267,7 +290,125 @@ export default {
                 this.editCardForm.owner_idsLength = this.editCardForm.owner_ids.length
                 this.editCardForm.joiner_idsLength = this.editCardForm.joiner_ids.length
             })
+        },
+        // 卡片关联文档
+        handleUpload(res) {
+            console.log(res);
+            var file = res.file;
+            const formData = new FormData()
+            const params = {
+                cmd: "card_docupload",
+                sid: getSessionStorage('token'),
+                data: {
+                    card_id: this.editCardForm.card_id
+                }
+            }
+            formData.append('json', JSON.stringify(params))
+            formData.append('uploadfile', file)
+            apiPost('/V2/index_prod.php', {
+                data: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+            }).then((resp) => {
+                this.$parent.queryTableList()
+            })
+        },
+        // 卡片关联文档删除
+        handleRemove(val) {
+            const params = {
+                cmd: "card_docdel",
+                sid: getSessionStorage('token'),
+                data: {
+                    doc_id: val.doc_id
+                }
+            }
+            apiPost('/V2/index_prod.php', {
+                data: {
+                    json: JSON.stringify(params)
+                }
+            }).then((resp) => {
+                this.$message({
+                    message: '删除成功',
+                    type: 'success'
+                });
+                this.$parent.queryTableList()
+            })
+        },
+        // 文档类型区分
+        docuType(val) {
+            let type = val.split('.')[1].toLowerCase()
+            if (type === 'JPEG' || type === 'jpg' || type === 'png') {
+                return 'photo'
+            } else if(type === 'docx') {
+                return 'docx'
+            } else if(type === 'xlsx') {
+                return 'xlsx'
+            } else if(type === 'pptx') {
+                return 'pptx'
+            } else if(type === 'pdf') {
+                return 'pdf'
+            } else {
+                return 'unknow'
+            }
         }
     }
 }
 </script>
+<style lang="scss" scoped>
+.formBody {
+    max-height: 610px;
+    overflow-y: auto;
+}
+
+.field-list {
+    .field-attach {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .thumb {
+        position: relative;
+        margin-right: 10px;
+        line-height: 58px;
+        width: 58px;
+        height: 58px;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .title {
+        font-size: 14px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .creator,
+    .creattime {
+        display: inline-block;
+        margin-right: 15px;
+        font-size: 12px;
+        color: #999;
+        vertical-align: top;
+    }
+
+    .action {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        .icon {
+            display: inline-block;
+            margin-right: 10px;
+            font-size: 14px;
+            color: #444;
+            cursor: pointer;
+        }
+    }
+}
+</style>
