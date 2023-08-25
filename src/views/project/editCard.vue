@@ -39,7 +39,7 @@
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="负责人" prop="owner_ids">
-                        <el-select v-model="editCardForm.owner_ids" multiple placeholder="请选择负责人" style="width: 100%;"
+                        <el-select v-model="editCardForm.owner_ids1" multiple placeholder="请选择负责人" style="width: 100%;"
                             @change="ownerChange($event, 1)" @remove-tag="ownerDel($event, 1)">
                             <el-option v-for="(item, index) in userOpts" :key="index" :label="item.name"
                                 :value="item.uid"></el-option>
@@ -48,7 +48,7 @@
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="参与人" prop="joiner_ids">
-                        <el-select v-model="editCardForm.joiner_ids" multiple placeholder="请选择参与人" style="width: 100%;"
+                        <el-select v-model="editCardForm.joiner_ids1" multiple placeholder="请选择参与人" style="width: 100%;"
                             @change="ownerChange($event, 2)" @remove-tag="ownerDel($event, 2)">
                             <el-option v-for="(item, index) in userOpts" :key="index" :label="item.name"
                                 :value="item.uid"></el-option>
@@ -62,16 +62,18 @@
                             <div slot="tip" class="el-upload__tip">文件大小不超过50M</div>
                         </el-upload>
                         <ul class="field-list">
-                            <li class="field-attach" v-for="(item,index) in editCardForm.doc_list" :key="index">
+                            <li class="field-attach" v-for="(item, index) in editCardForm.doc_list" :key="index">
                                 <img :src="require(`../../assets/${docuType(item.name)}.png`)" class="thumb">
                                 <div>
-                                    <div class="title">{{item.name}}</div>
-                                    <div class="creator">{{item.Creator.name}}</div>
-                                    <div class="creattime">{{item.create_time}}</div>
+                                    <div class="title">{{ item.name }}</div>
+                                    <div class="creator">{{ item.Creator.name }}</div>
+                                    <div class="creattime">{{ item.create_time }}</div>
                                 </div>
                                 <div class="action">
-                                    <span class="icon">预览</span>
-                                    <span class="icon">下载</span>
+                                    <span class="icon" v-if="docuType(item.name) === 'photo' || docuType(item.name) === 'pdf'">
+                                        <a id="new-page-link" :href="item.file_url" target="_blank">预览</a>
+                                    </span>
+                                    <span class="icon" @click="download(item)">下载</span>
                                     <span class="icon" @click="handleRemove(item)">删除</span>
                                 </div>
                             </li>
@@ -104,6 +106,8 @@ export default {
                 }
             ],
             userOpts: [],// 用户列表
+            editCardForm: {
+            },
             // 表单验证规则
             editCardFormRules: {
                 name: [
@@ -117,13 +121,14 @@ export default {
             type: Boolean,
             defalut: false
         },
-        editCardForm: {
-            type: Object,
-            defalut: {}
+        editCardId: {
+            type: String,
+            defalut: ''
         }
     },
     mounted() {
         this.queryUserList()
+        this.queryCardDetail()
     },
     methods: {
         // 获取用户列表
@@ -144,6 +149,52 @@ export default {
                 this.userOpts = data.list
             })
         },
+        // 获取卡片详情
+        queryCardDetail() {
+            const params = {
+                cmd: "card_detail",
+                sid: getSessionStorage('token'),
+                data: {
+                    card_id: this.editCardId
+                }
+            }
+            apiPost('/V2/index_prod.php', {
+                data: {
+                    json: JSON.stringify(params)
+                }
+            }).then((res) => {
+                const { data } = res
+                let owner_ids = []
+                for (let i = 0; i < data.owner_list.length; i++) {
+                    const element = data.owner_list[i];
+                    owner_ids[i] = element.uid
+                }
+                let joiner_ids = []
+                for (let i = 0; i < data.joiner_list.length; i++) {
+                    const element = data.joiner_list[i];
+                    joiner_ids[i] = element.uid
+                }
+                // this.editCardForm = {
+                //     card_id: val.card_id,
+                //     name: val.name,
+                //     begin_time: val.begin_time,
+                //     end_time: val.end_time,
+                //     descript: val.descript,
+                //     priority: val.priority,
+                //     owner_ids: owner_ids,
+                //     owner_idsLength: owner_ids.length,
+                //     joiner_ids: joiner_ids,
+                //     joiner_idsLength: joiner_ids.length,
+                //     doc_list: val.doc_list
+                // }
+                data.owner_ids1 = owner_ids
+                data.owner_idsLength = owner_ids.length
+                data.joiner_ids1 = joiner_ids
+                data.joiner_idsLength = joiner_ids.length
+                this.editCardForm = data
+                console.log(data);
+            })
+        },
         // 关闭弹窗时向父组件发送一个事件
         editCardDialog() {
             this.$refs.editCardForm.resetFields()
@@ -157,7 +208,7 @@ export default {
                         cmd: "card_nameset",
                         sid: getSessionStorage('token'),
                         data: {
-                            card_id: this.editCardForm.card_id,
+                            card_id: this.editCardId,
                             name: this.editCardForm.name
                         }
                     }
@@ -181,7 +232,7 @@ export default {
                         cmd: "card_timeset",
                         sid: getSessionStorage('token'),
                         data: {
-                            card_id: this.editCardForm.card_id,
+                            card_id: this.editCardId,
                             begin_time: this.editCardForm.begin_time,
                             end_time: this.editCardForm.end_time
                         }
@@ -206,7 +257,7 @@ export default {
                         cmd: "card_priorityset",
                         sid: getSessionStorage('token'),
                         data: {
-                            card_id: this.editCardForm.card_id,
+                            card_id: this.editCardId,
                             priority: this.editCardForm.priority
                         }
                     }
@@ -230,7 +281,7 @@ export default {
                         cmd: "card_descset",
                         sid: getSessionStorage('token'),
                         data: {
-                            card_id: this.editCardForm.card_id,
+                            card_id: this.editCardId,
                             descript: this.editCardForm.descript
                         }
                     }
@@ -253,7 +304,7 @@ export default {
                     cmd: "card_useradd",
                     sid: getSessionStorage('token'),
                     data: {
-                        card_id: this.editCardForm.card_id,
+                        card_id: this.editCardId,
                         type: type,
                         user_id: val[val.length - 1]
                     }
@@ -263,7 +314,7 @@ export default {
                         json: JSON.stringify(params)
                     }
                 }).then((res) => {
-                    this.$parent.queryTableList()
+                    this.queryCardDetail()
                     this.editCardForm.owner_idsLength = val.length
                     this.editCardForm.joiner_idsLength = val.length
                 })
@@ -271,12 +322,11 @@ export default {
         },
         // 卡片删除负责人、参与人
         ownerDel(val, type) {
-            console.log(val);
             const params = {
                 cmd: "card_userdel",
                 sid: getSessionStorage('token'),
                 data: {
-                    card_id: this.editCardForm.card_id,
+                    card_id: this.editCardId,
                     type: type,
                     user_id: val
                 }
@@ -286,9 +336,9 @@ export default {
                     json: JSON.stringify(params)
                 }
             }).then((res) => {
-                this.$parent.queryTableList()
-                this.editCardForm.owner_idsLength = this.editCardForm.owner_ids.length
-                this.editCardForm.joiner_idsLength = this.editCardForm.joiner_ids.length
+                this.queryCardDetail()
+                this.editCardForm.owner_idsLength = this.editCardForm.owner_ids1.length
+                this.editCardForm.joiner_idsLength = this.editCardForm.joiner_ids1.length
             })
         },
         // 卡片关联文档
@@ -300,7 +350,7 @@ export default {
                 cmd: "card_docupload",
                 sid: getSessionStorage('token'),
                 data: {
-                    card_id: this.editCardForm.card_id
+                    card_id: this.editCardId
                 }
             }
             formData.append('json', JSON.stringify(params))
@@ -312,42 +362,68 @@ export default {
                 },
             }).then((resp) => {
                 this.$parent.queryTableList()
+                this.queryCardDetail()
             })
         },
         // 卡片关联文档删除
         handleRemove(val) {
-            const params = {
-                cmd: "card_docdel",
-                sid: getSessionStorage('token'),
-                data: {
-                    doc_id: val.doc_id
+            this.$confirm('确定删除该附件?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                const params = {
+                    cmd: "card_docdel",
+                    sid: getSessionStorage('token'),
+                    data: {
+                        doc_id: val.doc_id
+                    }
                 }
-            }
-            apiPost('/V2/index_prod.php', {
-                data: {
-                    json: JSON.stringify(params)
-                }
-            }).then((resp) => {
-                this.$message({
-                    message: '删除成功',
-                    type: 'success'
-                });
-                this.$parent.queryTableList()
+                apiPost('/V2/index_prod.php', {
+                    data: {
+                        json: JSON.stringify(params)
+                    }
+                }).then((resp) => {
+                    this.$message({
+                        message: '删除成功',
+                        type: 'success'
+                    });
+                    this.$parent.queryTableList()
+                    this.queryCardDetail()
+                })
+            })
+        },
+        // 下载附件
+        async download(val) {
+            const link = document.createElement('a')
+            // 这里是将链接地址url转成blob地址，
+            fetch(val.file_url).then(res => res.blob()).then(blob => {
+                link.href = URL.createObjectURL(blob)
+                // 下载文件的名称及文件类型后缀
+                link.download = val.name
+                document.body.appendChild(link)
+                link.click()
+                // 在资源下载完成后 清除 占用的缓存资源
+                window.URL.revokeObjectURL(link.href)
+                document.body.removeChild(link)
             })
         },
         // 文档类型区分
         docuType(val) {
-            let type = val.split('.')[1].toLowerCase()
-            if (type === 'JPEG' || type === 'jpg' || type === 'png') {
+            let typeArr = val.split('.')
+            let type = typeArr[typeArr.length - 1].toLowerCase()
+            if (type === 'jpeg' || type === 'jpg' || type === 'png') {
                 return 'photo'
-            } else if(type === 'docx') {
+            } else if (type === 'docx' || type === 'doc') {
                 return 'docx'
-            } else if(type === 'xlsx') {
+            } else if (type === 'xls' || type === 'xlsx') {
                 return 'xlsx'
-            } else if(type === 'pptx') {
+            } else if (type === 'ppt' || type === 'pptx') {
                 return 'pptx'
-            } else if(type === 'pdf') {
+            } else if (type === 'pdf') {
                 return 'pdf'
+            } else if (type === 'rar' || type === 'zip' || type === 'jar' || type === 'arj') {
+                return 'package'
             } else {
                 return 'unknow'
             }
@@ -402,6 +478,7 @@ export default {
         top: 50%;
         right: 0;
         transform: translateY(-50%);
+
         .icon {
             display: inline-block;
             margin-right: 10px;

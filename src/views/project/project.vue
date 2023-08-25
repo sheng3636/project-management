@@ -5,7 +5,7 @@
       <div class="main-header">
         <span class="title">项目查询</span>
       </div>
-      <div class="main-content">
+      <div class="main-content main-content1">
         <el-form ref="queryParams" :model="queryParams" label-width="80px" label-position="top">
           <el-row>
             <el-col :md="4" class="md4">
@@ -33,7 +33,7 @@
           <el-button type="primary" size="small" @click="showAddDialog()">新建</el-button>
         </div>
       </div>
-      <el-table :data="tableList" border fit highlight-current-row>
+      <el-table :data="tableList" border fit highlight-current-row @row-click="rowClick">
         <el-table-column type="index" width="65" align="center" label="序号" />
         <el-table-column prop="name" align="center" width="220" label="项目名称" :show-overflow-tooltip="true" />
         <el-table-column align="center" width="220" label="项目负责人">
@@ -51,7 +51,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="操作" width="120" fixed="right">
+        <!-- <el-table-column align="center" label="操作" width="120" fixed="right">
           <template slot-scope="scope">
             <div class="columnOptionBtn">
               <el-button plain type="text" size="mini">
@@ -59,7 +59,7 @@
               </el-button>
             </div>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
       <!--分页-->
       <el-pagination :page-sizes="[10, 20, 30, 40]" layout="total, prev, pager, next, jumper" :total="total"
@@ -153,6 +153,14 @@ export default {
     handleCurrentChange(val) {
       this.queryParams.page = val
       this.queryTableList()
+    },
+    rowClick(row) {
+      this.$router.push({
+        path: `/project/layout/billboard/${row.project_id}?projectName=${row.name}`,
+        query: {
+          projectName: this.$route.query.projectName
+        }
+      })
     },
     // 查询按钮
     queryList: function (formName) {

@@ -5,7 +5,7 @@
             <div class="main-header">
                 <span class="title">文档查询</span>
             </div>
-            <div class="main-content">
+            <div class="main-content main-content1">
                 <el-form ref="queryParams" :model="queryParams" label-width="80px" label-position="top">
                     <el-row>
                         <el-col :md="4" class="md4">
@@ -42,13 +42,17 @@
                 <el-table-column prop="create_time" align="center" width="200" label="创建时间" />
                 <el-table-column prop="status" align="center" width="200" label="文档类型">
                     <template slot-scope="scope">
-                        {{ scope.row.type === '1' ? '文档类' : '图片类' }}
+                        {{ scope.row.type === '1' ? '文档类' : scope.row.type === '2' ? '图片类' : '其他' }}
                     </template>
                 </el-table-column>
-                <el-table-column align="center" label="操作" width="120" fixed="right">
+                <el-table-column align="center" label="操作" width="160" fixed="right">
                     <template slot-scope="scope">
                         <div class="columnOptionBtn">
-                            <el-button plain type="text" size="mini">预览</el-button>
+                            <el-button plain type="text" size="mini" v-if="docuType(scope.row.name) === 'photo' || docuType(scope.row.name) === 'pdf'">
+                                <a id="new-page-link" :href="scope.row.file_url" target="_blank">预览</a>
+                            </el-button>
+                            <el-button plain type="text" size="mini" @click="download(scope.row)">下载</el-button>
+                            <el-button plain type="text" size="mini" @click="handleRemove(scope.row)">删除</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -57,17 +61,14 @@
             <el-pagination :page-sizes="[10, 20, 30, 40]" layout="total, prev, pager, next, jumper" :total="total"
                 @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </div>
-        <add-project :add-edit-visi="addEditVisi" :add-edit-form="addEditForm" @dialogClose="dialogClose"></add-project>
     </div>
 </template>
 
 <script>
 import { apiPost } from '@/utils/request' // 引入请求方法
 import { getSessionStorage } from '@/utils/index'
-import addProject from './addProject'
 export default {
     components: {
-        addProject
     },
     data() {
         return {
@@ -84,6 +85,10 @@ export default {
                 {
                     value: '2',
                     label: '图片类'
+                },
+                {
+                    value: '3',
+                    label: '其他'
                 }
             ],
             // 文档列表查询参数
@@ -128,16 +133,68 @@ export default {
                 this.tableList = data.list
             })
         },
-        // 弹出新增弹窗
-        showAddDialog() {
-            this.addEditVisi = true
-            this.addEditForm = {}
+        // 下载附件
+        async download(val) {
+            const link = document.createElement('a')
+            // 这里是将链接地址url转成blob地址，
+            fetch(val.file_url).then(res => res.blob()).then(blob => {
+                link.href = URL.createObjectURL(blob)
+                // 下载文件的名称及文件类型后缀
+                link.download = val.name
+                document.body.appendChild(link)
+                link.click()
+                // 在资源下载完成后 清除 占用的缓存资源
+                window.URL.revokeObjectURL(link.href)
+                document.body.removeChild(link)
+            })
         },
-        // 关闭新增编辑弹窗
-        dialogClose() {
-            this.addEditVisi = false
+        // 卡片关联文档删除
+        handleRemove(val) {
+            this.$confirm('确定删除该附件?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                const params = {
+                    cmd: "card_docdel",
+                    sid: getSessionStorage('token'),
+                    data: {
+                        doc_id: val.doc_id
+                    }
+                }
+                apiPost('/V2/index_prod.php', {
+                    data: {
+                        json: JSON.stringify(params)
+                    }
+                }).then((resp) => {
+                    this.$message({
+                        message: '删除成功',
+                        type: 'success'
+                    });
+                    this.queryTableList()
+                })
+            })
         },
-
+        // 文档类型区分
+        docuType(val) {
+            let typeArr = val.split('.')
+            let type = typeArr[typeArr.length - 1].toLowerCase()
+            if (type === 'jpeg' || type === 'jpg' || type === 'png') {
+                return 'photo'
+            } else if (type === 'docx' || type === 'doc') {
+                return 'docx'
+            } else if (type === 'xls' || type === 'xlsx') {
+                return 'xlsx'
+            } else if (type === 'ppt' || type === 'pptx') {
+                return 'pptx'
+            } else if (type === 'pdf') {
+                return 'pdf'
+            } else if (type === 'rar' || type === 'zip' || type === 'jar' || type === 'arj') {
+                return 'package'
+            } else {
+                return 'unknow'
+            }
+        },
         // pageSize 改变时会触发
         handleSizeChange(val) {
             this.queryParams.num = val

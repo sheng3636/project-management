@@ -6,7 +6,7 @@
             <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
                 <el-menu-item index="billboard">看板</el-menu-item>
                 <el-menu-item index="documents">文档</el-menu-item>
-                <el-menu-item index="dashboard">报表</el-menu-item>
+                <!-- <el-menu-item index="dashboard">报表</el-menu-item> -->
                 <el-menu-item index="projectDetail">设置</el-menu-item>
             </el-menu>
         </div>

@@ -120,11 +120,6 @@ export default {
       padding: 12px 5px 12px 15px;
       color: #000;
       height: 50px;
-
-      &:-webkit-autofill {
-        box-shadow: 0 0 0px 1000px #283443 inset !important;
-        -webkit-text-fill-color: #000 !important;
-      }
     }
   }
 

@@ -5,7 +5,7 @@
       <div class="main-header">
         <span class="title">用户查询</span>
       </div>
-      <div class="main-content">
+      <div class="main-content main-content1">
         <el-form ref="queryParams" :model="queryParams" label-width="80px" label-position="top">
           <el-row>
             <el-col :md="4" class="md4">
@@ -37,7 +37,7 @@
         <el-table-column prop="email" align="center" label="邮箱" />
       </el-table>
       <!--分页-->
-      <el-pagination layout="total, prev, pager, next, jumper" :total="total" />
+      <el-pagination layout="total" :total="total" />
     </div>
   </div>
 </template>

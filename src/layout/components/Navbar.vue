@@ -5,7 +5,7 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <span>{{userInfo.name}}，欢迎您</span>
+          <span>{{ userInfo.name }}，欢迎您</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -43,6 +43,11 @@
               <el-input v-model="editPassForm.new_pwd" placeholder="请输入新密码" />
             </el-form-item>
           </el-col>
+          <el-col :span="12">
+            <el-form-item label="确认密码" prop="comfirm_pwd">
+              <el-input v-model="editPassForm.comfirm_pwd" placeholder="请重新输入新密码" />
+            </el-form-item>
+          </el-col>
         </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -59,6 +64,7 @@ import { getSessionStorage, removeSessionStorage } from '@/utils/index'
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import { validatePassword } from '@/utils/validate'
 
 export default {
   components: {
@@ -80,7 +86,10 @@ export default {
           { required: true, message: '请输入旧密码', trigger: 'blur' }
         ],
         new_pwd: [
-          { required: true, message: '请输入新密码', trigger: 'blur' }
+          { required: true, validator: validatePassword, trigger: 'change' }
+        ],
+        comfirm_pwd: [
+          { required: true, validator: validatePassword, trigger: 'blur' }
         ]
       },
     }
@@ -107,6 +116,20 @@ export default {
     onSubmit(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          if (this.editPassForm.old_pwd === this.editPassForm.new_pwd) {
+            this.$message({
+              message: '旧密码与新密码不得相同',
+              type: 'warning'
+            });
+            return
+          }
+          if (this.editPassForm.new_pwd !== this.editPassForm.comfirm_pwd) {
+            this.$message({
+              message: '两次输入的密码不一致！',
+              type: 'warning'
+            });
+            return
+          }
           const params = {
             cmd: "user_changepwd",
             sid: getSessionStorage('token'),
@@ -120,6 +143,10 @@ export default {
               json: JSON.stringify(params)
             }
           }).then((res) => {
+            this.$message({
+              message: '密码修改成功',
+              type: 'success'
+            });
             removeSessionStorage('userInfo')
             removeSessionStorage('token')
             this.$router.push(`/login?redirect=${this.$route.fullPath}`)

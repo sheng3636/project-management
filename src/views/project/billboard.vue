@@ -81,7 +81,7 @@
         <add-card :add-card-visi="addCardVisi" v-if="addCardVisi" :add-card-form="addCardForm"
             @addCardDialog="addCardDialog"></add-card>
         <!-- 编辑卡片 -->
-        <edit-card :edit-card-visi="editCardVisi" v-if="editCardVisi" :edit-card-form="editCardForm"
+        <edit-card :edit-card-visi="editCardVisi" v-if="editCardVisi" :edit-card-id="editCardId"
             @editCardDialog="editCardDialog"></edit-card>
         <!-- 修改板块标题 -->
         <el-dialog title="修改板块标题" :visible.sync="editModuleNameVisi" :close-on-click-modal="false"
@@ -168,16 +168,8 @@ export default {
                 ]
             },
             editCardVisi: false,// 是否显示编辑卡片弹窗
-            // 卡片编辑参数
-            editCardForm: {
-                card_id: '',
-                name: '',
-                begin_time: '',
-                end_time: '',
-                descript: '',
-                priority: '',
-                owner_ids: []
-            },
+            // 卡片id
+            editCardId: '',
             editCardNameVisi: false,// 是否显示修改卡片名称弹窗
             // 修改卡片名称表单
             editCardNameForm: {
@@ -256,30 +248,7 @@ export default {
         // 弹出编辑卡片弹窗
         showEditCardDialog(val) {
             this.editCardVisi = true
-            let owner_ids = []
-            for (let i = 0; i < val.owner_list.length; i++) {
-                const element = val.owner_list[i];
-                owner_ids[i] = element.uid
-            }
-            let joiner_ids = []
-            for (let i = 0; i < val.joiner_list.length; i++) {
-                const element = val.joiner_list[i];
-                joiner_ids[i] = element.uid
-            }
-            this.editCardForm = {
-                card_id: val.card_id,
-                name: val.name,
-                begin_time: val.begin_time,
-                end_time: val.end_time,
-                descript: val.descript,
-                priority: val.priority,
-                owner_ids: owner_ids,
-                owner_idsLength: owner_ids.length,
-                joiner_ids: joiner_ids,
-                joiner_idsLength: joiner_ids.length,
-                doc_list: val.doc_list
-            }
-            console.log(this.editCardForm);
+            this.editCardId = val.card_id
         },
         // 关闭编辑卡片弹窗
         editCardDialog() {

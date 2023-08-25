@@ -13,7 +13,8 @@ import store from './store'
 import router from './router'
 
 import '@/icons' // icon
-// import '@/permission' // permission control
+import *as echarts from 'echarts'//引入echarts
+Vue.prototype.$echarts = echarts//挂载到Vue实例上，方便全局使用
 
 /**
  * If you don't want to use mock-server
