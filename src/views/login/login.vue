@@ -33,8 +33,8 @@ export default {
   data() {
     return {
       loginForm: {
-        username: '17721064192',
-        password: '4192'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [
@@ -71,8 +71,8 @@ export default {
         if (valid) {
           this.loading = true
           const params = {
-            cmd: "user_login",
-            sid: "",
+            cmd: 'user_login',
+            sid: '',
             data: {
               phone: this.loginForm.username,
               pwd: this.loginForm.password

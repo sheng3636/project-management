@@ -50,8 +50,7 @@
                         <el-col :span="8">
                             <el-form-item label="项目状态" prop="status">
                                 <el-switch v-model="editProjectForm.status" active-value="2" inactive-value="1"
-                                    active-text="已完成" inactive-text="进行中" :disabled="editProjectForm.status === '2'"
-                                    @change="statusChange"></el-switch>
+                                    active-text="已完成" inactive-text="进行中" @change="statusChange"></el-switch>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -86,7 +85,7 @@ export default {
             // 编辑项目表单
             editProjectForm: {
                 Creator: {
-                    name:''
+                    name: ''
                 }
             },
             // 表单验证规则
@@ -123,7 +122,6 @@ export default {
                 this.editProjectForm = data
             })
         },
-
         // 提交修改项目名称表单
         nameChange() {
             this.$refs.editProjectForm.validate(valid => {
@@ -141,7 +139,7 @@ export default {
                             json: JSON.stringify(params)
                         }
                     }).then((res) => {
-                        this.$parent.queryTableList()
+                        this.queryProjectDetail()
                     })
                 } else {
                     return false
@@ -165,7 +163,7 @@ export default {
                             json: JSON.stringify(params)
                         }
                     }).then((res) => {
-                        this.$parent.queryTableList()
+                        this.queryProjectDetail()
                     })
                 } else {
                     return false
@@ -181,8 +179,8 @@ export default {
                         sid: getSessionStorage('token'),
                         data: {
                             project_id: this.editProjectForm.project_id,
-                            begin_time: this.editProjectForm.begin_time,
-                            end_time: this.editProjectForm.end_time
+                            begin_time: this.editProjectForm.begin_time ? this.editProjectForm.begin_time : '',
+                            end_time: this.editProjectForm.end_time ? this.editProjectForm.end_time : '',
                         }
                     }
                     apiPost('/V2/index_prod.php', {
@@ -190,7 +188,7 @@ export default {
                             json: JSON.stringify(params)
                         }
                     }).then((res) => {
-                        this.$parent.queryTableList()
+                        this.queryProjectDetail()
                     })
                 } else {
                     return false
@@ -198,28 +196,38 @@ export default {
             })
         },
         // 提交项目完成请求
-        statusChange() {
-            this.$refs.editProjectForm.validate(valid => {
-                if (valid) {
-                    const params = {
-                        cmd: "project_complete",
-                        sid: getSessionStorage('token'),
-                        data: {
-                            project_id: this.editProjectForm.project_id
-                        }
+        statusChange(val) {
+            if (val === '2') {
+                const params = {
+                    cmd: "project_complete",
+                    sid: getSessionStorage('token'),
+                    data: {
+                        project_id: this.editProjectForm.project_id
                     }
-                    apiPost('/V2/index_prod.php', {
-                        data: {
-                            json: JSON.stringify(params)
-                        }
-                    }).then((res) => {
-                        this.$parent.queryTableList()
-                    })
-                } else {
-                    return false
                 }
-            })
-
+                apiPost('/V2/index_prod.php', {
+                    data: {
+                        json: JSON.stringify(params)
+                    }
+                }).then((res) => {
+                    this.queryProjectDetail()
+                })
+            } else {
+                const params = {
+                    cmd: "project_restart",
+                    sid: getSessionStorage('token'),
+                    data: {
+                        project_id: this.editProjectForm.project_id
+                    }
+                }
+                apiPost('/V2/index_prod.php', {
+                    data: {
+                        json: JSON.stringify(params)
+                    }
+                }).then((res) => {
+                    this.queryProjectDetail()
+                })
+            }
         }
     }
 }

@@ -41,17 +41,24 @@
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </div>
-                            <div class="label-wrap">
-                                <span class="board_viewlabel label-1"
-                                    v-if="val.priority == '1' || val.priority == '2' || val.priority == '3'"></span>
-                                <span class="board_viewlabel label-2"
-                                    v-if="val.priority == '2' || val.priority == '3'"></span>
+                            <div class="label-wrap" @click="showEditCardDialog(val)">
+                                <span class="board_viewlabel label-1" v-if="val.priority == '1'"></span>
+                                <span class="board_viewlabel label-2" v-if="val.priority == '2'"></span>
                                 <span class="board_viewlabel label-3" v-if="val.priority == '3'"></span>
                             </div>
-                            <p class="projectTime" :class="{ gray: val.status == '2' }">
+                            <div class="projectTime" :class="{ gray: val.status == '2' }"  v-if="val.begin_time || val.end_time" @click="showEditCardDialog(val)">
                                 <i class="iconfont icon-shizhong" title="更多操作"></i>
-                                {{ val.begin_time }} - {{ val.end_time }}
-                            </p>
+                                <p>
+                                    {{ val.begin_time }}<span v-if="!val.end_time">(开始)</span>
+                                    <span  v-if="val.begin_time && val.end_time">—</span>
+                                    {{ val.end_time }}<span v-if="!val.begin_time">(截至)</span>
+                                </p>
+                            </div>
+                            <div class="pull-left" @click="showEditCardDialog(val)">
+                                <span class="field attachment" v-if="val.have_file === '1'">
+                                    <i class="iconfont icon-guanlianbiaodan"></i>
+                                </span>
+                            </div>
                         </li>
                     </ul>
                     <div class="list-bottom" @click="showAddCardDialog(item)">

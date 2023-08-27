@@ -70,7 +70,8 @@
                                     <div class="creattime">{{ item.create_time }}</div>
                                 </div>
                                 <div class="action">
-                                    <span class="icon" v-if="docuType(item.name) === 'photo' || docuType(item.name) === 'pdf'">
+                                    <span class="icon"
+                                        v-if="docuType(item.name) === 'tuPian' || docuType(item.name) === 'pdf'">
                                         <a id="new-page-link" :href="item.file_url" target="_blank">预览</a>
                                     </span>
                                     <span class="icon" @click="download(item)">下载</span>
@@ -233,8 +234,8 @@ export default {
                         sid: getSessionStorage('token'),
                         data: {
                             card_id: this.editCardId,
-                            begin_time: this.editCardForm.begin_time,
-                            end_time: this.editCardForm.end_time
+                            begin_time: this.editCardForm.begin_time ? this.editCardForm.begin_time : '',
+                            end_time: this.editCardForm.end_time ? this.editCardForm.end_time : ''
                         }
                     }
                     apiPost('/V2/index_prod.php', {
@@ -361,6 +362,10 @@ export default {
                     'Content-Type': 'multipart/form-data'
                 },
             }).then((resp) => {
+                this.$message({
+                    message: '上传成功',
+                    type: 'success'
+                });
                 this.$parent.queryTableList()
                 this.queryCardDetail()
             })
@@ -412,14 +417,14 @@ export default {
         docuType(val) {
             let typeArr = val.split('.')
             let type = typeArr[typeArr.length - 1].toLowerCase()
-            if (type === 'jpeg' || type === 'jpg' || type === 'png') {
-                return 'photo'
+            if (type === 'jpeg' || type === 'jpg' || type === 'png' || type === 'gif') {
+                return 'tuPian'
             } else if (type === 'docx' || type === 'doc') {
-                return 'docx'
+                return 'word'
             } else if (type === 'xls' || type === 'xlsx') {
-                return 'xlsx'
+                return 'excel'
             } else if (type === 'ppt' || type === 'pptx') {
-                return 'pptx'
+                return 'ppt'
             } else if (type === 'pdf') {
                 return 'pdf'
             } else if (type === 'rar' || type === 'zip' || type === 'jar' || type === 'arj') {

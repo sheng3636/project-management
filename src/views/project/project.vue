@@ -51,15 +51,6 @@
             </el-tag>
           </template>
         </el-table-column>
-        <!-- <el-table-column align="center" label="操作" width="120" fixed="right">
-          <template slot-scope="scope">
-            <div class="columnOptionBtn">
-              <el-button plain type="text" size="mini">
-                <router-link :to="`/project/layout/billboard/${scope.row.project_id}?projectName=${scope.row.name}`">进入</router-link>
-              </el-button>
-            </div>
-          </template>
-        </el-table-column> -->
       </el-table>
       <!--分页-->
       <el-pagination :page-sizes="[10, 20, 30, 40]" layout="total, prev, pager, next, jumper" :total="total"
@@ -98,7 +89,7 @@ export default {
       queryParams: {
         num: 10,
         page: 1,
-        status: ''// 0-全部  1-进行中  2-已结束
+        status: '1'// 0-全部  1-进行中  2-已结束
       },
       total: 0,// 项目列表总数
       tableList: [],// 项目列表数据

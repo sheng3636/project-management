@@ -111,6 +111,7 @@ export default {
     // 关闭修改密码弹窗
     closeEditPassDialog() {
       this.editPassVisi = false
+      this.$refs['editPassForm'].resetFields()
     },
     // 修改密码
     onSubmit(formName) {
@@ -149,7 +150,7 @@ export default {
             });
             removeSessionStorage('userInfo')
             removeSessionStorage('token')
-            this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+            this.$router.push(`/login`)
           })
         } else {
           return false

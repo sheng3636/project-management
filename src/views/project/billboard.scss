@@ -135,6 +135,7 @@
         min-width: 28px;
         height: 15px;
         border-radius: 2px;
+        cursor: pointer;
 
         &.label-1 {
             background-color: #93C36B !important;
@@ -151,8 +152,33 @@
 }
 
 .projectTime {
+    display: flex;
+    align-items: center;
     padding: 0 0 0 20px;
     font-size: 12px;
+    cursor: pointer;
+    .iconfont {
+        display: inline-block;
+        margin-right: 5px;
+    }
+}
+
+.pull-left {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    .field {
+        display: inline-block;
+        padding: 3px;
+        height: 24px;
+        line-height: 24px;
+        border-radius: 3px;
+        font-size: 12px;
+        .iconfont {
+            font-size: 16px;
+        }
+    }
 }
 
 // 创建卡片
