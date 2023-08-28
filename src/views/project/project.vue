@@ -146,10 +146,11 @@ export default {
       this.queryTableList()
     },
     rowClick(row) {
+      console.log(row);
       this.$router.push({
-        path: `/project/layout/billboard/${row.project_id}?projectName=${row.name}`,
+        path: `/project/layout/billboard/${row.project_id}`,
         query: {
-          projectName: this.$route.query.projectName
+          projectName: row.name
         }
       })
     },

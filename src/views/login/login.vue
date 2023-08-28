@@ -83,7 +83,6 @@ export default {
               json: JSON.stringify(params)
             }
           }).then((res) => {
-            console.log(res);
             this.loading = false
             setSessionStorage('token', res.data.sid)
             setSessionStorage('userInfo', res.data.User)

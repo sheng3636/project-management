@@ -1,6 +1,7 @@
 <template>
     <el-dialog title="编辑卡片" :visible.sync="editCardVisi" :close-on-click-modal="false" :close-on-press-escape="false"
-        :before-close="editCardDialog" width="60%">
+        :before-close="editCardDialog" width="60%" v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="正在上传"
+        element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
         <el-form class="formBody" ref="editCardForm" :model="editCardForm" :rules="editCardFormRules" label-width="80px"
             label-position="top">
             <el-row>
@@ -91,6 +92,7 @@ import { getSessionStorage } from '@/utils/index'
 export default {
     data() {
         return {
+            fullscreenLoading: false,
             priorityOpts: [
                 {
                     name: '无',
@@ -315,6 +317,7 @@ export default {
                         json: JSON.stringify(params)
                     }
                 }).then((res) => {
+                    this.$parent.queryTableList()
                     this.queryCardDetail()
                     this.editCardForm.owner_idsLength = val.length
                     this.editCardForm.joiner_idsLength = val.length
@@ -337,6 +340,7 @@ export default {
                     json: JSON.stringify(params)
                 }
             }).then((res) => {
+                this.$parent.queryTableList()
                 this.queryCardDetail()
                 this.editCardForm.owner_idsLength = this.editCardForm.owner_ids1.length
                 this.editCardForm.joiner_idsLength = this.editCardForm.joiner_ids1.length
@@ -344,7 +348,7 @@ export default {
         },
         // 卡片关联文档
         handleUpload(res) {
-            console.log(res);
+            this.fullscreenLoading = true
             var file = res.file;
             const formData = new FormData()
             const params = {
@@ -366,8 +370,11 @@ export default {
                     message: '上传成功',
                     type: 'success'
                 });
+                this.fullscreenLoading = false
                 this.$parent.queryTableList()
                 this.queryCardDetail()
+            }).catch(() => {
+                this.fullscreenLoading = false
             })
         },
         // 卡片关联文档删除

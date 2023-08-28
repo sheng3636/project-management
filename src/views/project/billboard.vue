@@ -46,18 +46,22 @@
                                 <span class="board_viewlabel label-2" v-if="val.priority == '2'"></span>
                                 <span class="board_viewlabel label-3" v-if="val.priority == '3'"></span>
                             </div>
-                            <div class="projectTime" :class="{ gray: val.status == '2' }"  v-if="val.begin_time || val.end_time" @click="showEditCardDialog(val)">
+                            <div class="projectTime" :class="{ gray: val.status == '2' }"
+                                v-if="val.begin_time || val.end_time" @click="showEditCardDialog(val)">
                                 <i class="iconfont icon-shizhong" title="更多操作"></i>
                                 <p>
                                     {{ val.begin_time }}<span v-if="!val.end_time">(开始)</span>
-                                    <span  v-if="val.begin_time && val.end_time">—</span>
+                                    <span v-if="val.begin_time && val.end_time">—</span>
                                     {{ val.end_time }}<span v-if="!val.begin_time">(截至)</span>
                                 </p>
                             </div>
                             <div class="pull-left" @click="showEditCardDialog(val)">
-                                <span class="field attachment" v-if="val.have_file === '1'">
+                                <span class="field" v-if="val.have_file === '1'">
                                     <i class="iconfont icon-guanlianbiaodan"></i>
                                 </span>
+                                <i class="avatar" :class="'avatar' + ownerKey" v-for="(ownerItem,ownerKey) in val.owner_list" :key="ownerKey" :title="ownerItem.name">
+                                    <span class="avatar-default-name">{{ownerItem.name.length >2 ? ownerItem.name.slice(-2) : ownerItem.name}}</span>
+                                </i>
                             </div>
                         </li>
                     </ul>
