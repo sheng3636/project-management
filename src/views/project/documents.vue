@@ -48,7 +48,7 @@
                 <el-table-column align="center" label="操作" width="160" fixed="right">
                     <template slot-scope="scope">
                         <div class="columnOptionBtn">
-                            <el-button plain type="text" size="mini" v-if="docuType(scope.row.name) === 'photo' || docuType(scope.row.name) === 'pdf'">
+                            <el-button plain type="text" size="mini" v-if="docuType(scope.row.name) === 'tuPian' || docuType(scope.row.name) === 'pdf'">
                                 <a id="new-page-link" :href="scope.row.file_url" target="_blank">预览</a>
                             </el-button>
                             <el-button plain type="text" size="mini" @click="download(scope.row)">下载</el-button>
@@ -179,14 +179,14 @@ export default {
         docuType(val) {
             let typeArr = val.split('.')
             let type = typeArr[typeArr.length - 1].toLowerCase()
-            if (type === 'jpeg' || type === 'jpg' || type === 'png') {
-                return 'photo'
+            if (type === 'jpeg' || type === 'jpg' || type === 'png' || type === 'gif') {
+                return 'tuPian'
             } else if (type === 'docx' || type === 'doc') {
-                return 'docx'
+                return 'word'
             } else if (type === 'xls' || type === 'xlsx') {
-                return 'xlsx'
+                return 'excel'
             } else if (type === 'ppt' || type === 'pptx') {
-                return 'pptx'
+                return 'ppt'
             } else if (type === 'pdf') {
                 return 'pdf'
             } else if (type === 'rar' || type === 'zip' || type === 'jar' || type === 'arj') {

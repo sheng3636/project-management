@@ -13,14 +13,14 @@
                 <el-col :span="8">
                     <el-form-item label="开始时间" prop="date">
                         <el-date-picker v-model="editCardForm.begin_time" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择开始时间" style="width: 100%;" @change="timeChange">
+                            placeholder="请选择开始时间" style="width: 100%;" :picker-options="editStartOptions" @change="timeChange">
                         </el-date-picker>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
                     <el-form-item label="结束时间" prop="date">
                         <el-date-picker v-model="editCardForm.end_time" type="date" value-format="yyyy-MM-dd"
-                            placeholder="请选择结束时间" style="width: 100%;" @change="timeChange">
+                            placeholder="请选择结束时间" style="width: 100%;" :picker-options="editStopOptions" @change="timeChange">
                         </el-date-picker>
                     </el-form-item>
                 </el-col>
@@ -116,7 +116,24 @@ export default {
                 name: [
                     { required: true, message: '请输入标题', trigger: 'blur' }
                 ],
-            }
+            },
+            editStartOptions: {
+                disabledDate: time => {
+                    if (!this.editCardForm.end_time) {
+                        return time.getTime() < new Date(1970 - 1 - 1).getTime();   //禁止选择1970年以前的日期
+                    } else {
+                        return time.getTime() >= new Date(this.editCardForm.end_time);
+                    }
+                }
+            },
+            editStopOptions: {
+                disabledDate: time => {
+                    return (
+                        time.getTime() < new Date(this.editCardForm.begin_time) ||
+                        time.getTime() < new Date(1970 - 1 - 1).getTime()    //禁止选择1970年以前的日期
+                    )
+                }
+            },
         }
     },
     props: {
@@ -231,13 +248,22 @@ export default {
         timeChange() {
             this.$refs.editCardForm.validate(valid => {
                 if (valid) {
+                    // let flag = moment(this.editCardForm.end_time).isBefore(this.editCardForm.begin_time)
+                    // if (flag) {
+                    //     this.$message({
+                    //         message: '结束时间不得早于开始时间',
+                    //         type: 'warning'
+                    //     });
+                    //     // this.queryProjectDetail()
+                    //     return
+                    // }
                     const params = {
                         cmd: "card_timeset",
                         sid: getSessionStorage('token'),
                         data: {
                             card_id: this.editCardId,
-                            begin_time: this.editCardForm.begin_time ? this.editCardForm.begin_time : '',
-                            end_time: this.editCardForm.end_time ? this.editCardForm.end_time : ''
+                            begin_time: this.editCardForm.begin_time,
+                            end_time: this.editCardForm.end_time
                         }
                     }
                     apiPost('/V2/index_prod.php', {
