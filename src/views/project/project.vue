@@ -34,7 +34,11 @@
         </div>
       </div>
       <el-table :data="tableList" border fit highlight-current-row @row-click="rowClick">
-        <el-table-column type="index" width="65" align="center" label="序号" />
+        <el-table-column label="序号" width="65" fixed="left" align="center">
+          <template slot-scope="scope">
+            <span v-text="(queryParams.page - 1) * queryParams.num + (scope.$index + 1)"></span>
+          </template>
+        </el-table-column>
         <el-table-column prop="name" align="center" width="220" label="项目名称" :show-overflow-tooltip="true" />
         <el-table-column align="center" width="220" label="项目负责人">
           <template slot-scope="scope">
@@ -157,6 +161,7 @@ export default {
     // 查询按钮
     queryList: function (formName) {
       this.$refs[formName].validate(valid => {
+        this.queryParams.page = 1
         if (valid) {
           this.queryTableList()
         } else {
@@ -167,6 +172,7 @@ export default {
     // 重置按钮
     resetData(formName) {
       this.$refs[formName].resetFields()
+      this.queryParams.page = 1
       this.queryTableList()
       console.log('重置')
     }

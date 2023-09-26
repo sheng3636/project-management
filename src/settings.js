@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '项目管理',
+  title: '金山局DICT项目管理平台',
 
   /**
    * @type {boolean} true | false

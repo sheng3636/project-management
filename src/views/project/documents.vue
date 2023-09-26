@@ -32,7 +32,11 @@
                 <span class="title">文档列表</span>
             </div>
             <el-table :data="tableList" border fit highlight-current-row>
-                <el-table-column type="index" width="65" align="center" label="序号" />
+                <el-table-column label="序号" width="65" fixed="left" align="center">
+                    <template slot-scope="scope">
+                        <span v-text="(queryParams.page - 1) * queryParams.num + (scope.$index + 1)"></span>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="name" align="center" label="文档名称" :show-overflow-tooltip="true" />
                 <el-table-column align="center" width="220" label="创建人">
                     <template slot-scope="scope">
@@ -48,7 +52,8 @@
                 <el-table-column align="center" label="操作" width="160" fixed="right">
                     <template slot-scope="scope">
                         <div class="columnOptionBtn">
-                            <el-button plain type="text" size="mini" v-if="docuType(scope.row.name) === 'tuPian' || docuType(scope.row.name) === 'pdf'">
+                            <el-button plain type="text" size="mini"
+                                v-if="docuType(scope.row.name) === 'tuPian' || docuType(scope.row.name) === 'pdf'">
                                 <a id="new-page-link" :href="scope.row.file_url" target="_blank">预览</a>
                             </el-button>
                             <el-button plain type="text" size="mini" @click="download(scope.row)">下载</el-button>
@@ -208,6 +213,7 @@ export default {
         // 查询按钮
         queryList: function (formName) {
             this.$refs[formName].validate(valid => {
+                this.queryParams.page = 1
                 if (valid) {
                     this.queryTableList()
                 } else {
@@ -218,6 +224,7 @@ export default {
         // 重置按钮
         resetData(formName) {
             this.$refs[formName].resetFields()
+            this.queryParams.page = 1
             this.queryTableList()
             console.log('重置')
         }
