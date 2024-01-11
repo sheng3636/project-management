@@ -124,12 +124,40 @@ export const constantRoutes = [
 
     ]
   },
+  // {
+  //   path: '/workbench',
+  //   component: Layout,
+  //   redirect: '/workbench/backlog',
+  //   name: 'Workbench',
+  //   meta: {
+  //     title: '工作台',
+  //     icon: 'workbench'
+  //   },
+  //   children: [
+  //     {
+  //       path: 'backlog',
+  //       name: 'Backlog',
+  //       component: () => import('@/views/workbench/backlog'),
+  //       meta: {
+  //         title: '我的待办',
+  //       }
+  //     },
+  //     {
+  //       path: 'finished',
+  //       name: 'Finished',
+  //       component: () => import('@/views/workbench/finished'),
+  //       meta: {
+  //         title: '我的已办',
+  //       }
+  //     }
+  //   ]
+  // },
   {
     path: '/member',
     component: Layout,
     children: [
       {
-        path: 'member',
+        path: 'list',
         name: 'Member',
         component: () => import('@/views/member/member'),
         meta: {
@@ -140,7 +168,7 @@ export const constantRoutes = [
     ]
   },
 
-  // 404 page must be placed at the end !!!
+  // 404页一定要放在最后!!
   { path: '*', redirect: '/404', hidden: true }
 ]
 
