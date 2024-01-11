@@ -16,6 +16,11 @@
                 </el-select>
               </el-form-item>
             </el-col>
+            <el-col :md="4" class="md4">
+              <el-form-item label="关键字" prop="keyword">
+                <el-input v-model="queryParams.keyword" placeholder="请输入关键字" />
+              </el-form-item>
+            </el-col>
             <el-col :md="3">
               <el-form-item class="param">
                 <el-button type="warning" size="mini" @click="queryList('queryParams')">查询</el-button>
@@ -93,6 +98,7 @@ export default {
       queryParams: {
         num: 10,
         page: 1,
+        keyword:'',
         status: '1'// 0-全部  1-进行中  2-已结束
       },
       total: 0,// 项目列表总数
@@ -116,6 +122,7 @@ export default {
         sid: getSessionStorage('token'),
         data: {
           status: this.queryParams.status,
+          keyword: this.queryParams.keyword,
           page: this.queryParams.page,
           num: this.queryParams.num
         }
