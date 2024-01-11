@@ -11,13 +11,13 @@
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="开始时间" prop="date">
-                        <el-date-picker v-model="addCardForm.begin_time" type="date" value-format="yyyy-MM-dd" placeholder="请选择开始时间" style="width: 100%;">
+                        <el-date-picker v-model="addCardForm.begin_time" type="date" value-format="yyyy-MM-dd" placeholder="请选择开始时间" style="width: 100%;" :picker-options="editStartOptions">
                         </el-date-picker>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="结束时间" prop="date">
-                        <el-date-picker v-model="addCardForm.end_time" type="date" value-format="yyyy-MM-dd" placeholder="请选择结束时间" style="width: 100%;">
+                        <el-date-picker v-model="addCardForm.end_time" type="date" value-format="yyyy-MM-dd" placeholder="请选择结束时间" style="width: 100%;" :picker-options="editStopOptions">
                         </el-date-picker>
                     </el-form-item>
                 </el-col>
@@ -72,7 +72,21 @@ export default {
                 name: [
                     { required: true, message: '请输入标题', trigger: 'blur' }
                 ],
-            }
+            },
+            editStartOptions: {
+                disabledDate: time => {
+                    if (this.addCardForm.end_time) {
+                        return time.getTime() > new Date(this.addCardForm.end_time).getTime();
+                    }
+                }
+            },
+            editStopOptions: {
+                disabledDate: time => {
+                    if (this.addCardForm.begin_time) {
+                        return time.getTime() <= new Date(this.addCardForm.begin_time).getTime() - 1000 * 60 * 60 * 24;
+                    }
+                }
+            },
         }
     },
     props: {

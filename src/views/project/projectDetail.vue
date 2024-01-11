@@ -36,14 +36,16 @@
                         <el-col :span="8">
                             <el-form-item label="开始时间" prop="date">
                                 <el-date-picker v-model="editProjectForm.begin_time" type="date" value-format="yyyy-MM-dd"
-                                    placeholder="请选择开始时间" style="width: 100%;" :picker-options="editStartOptions" @change="timeChange">
+                                    placeholder="请选择开始时间" style="width: 100%;" :picker-options="editStartOptions"
+                                    @change="timeChange">
                                 </el-date-picker>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
                             <el-form-item label="结束时间" prop="date">
                                 <el-date-picker v-model="editProjectForm.end_time" type="date" value-format="yyyy-MM-dd"
-                                    placeholder="请选择结束时间" style="width: 100%;" :picker-options="editStopOptions" @change="timeChange">
+                                    placeholder="请选择结束时间" style="width: 100%;" :picker-options="editStopOptions"
+                                    @change="timeChange">
                                 </el-date-picker>
                             </el-form-item>
                         </el-col>
@@ -100,19 +102,16 @@ export default {
             },
             editStartOptions: {
                 disabledDate: time => {
-                    if (!this.editProjectForm.end_time) {
-                        return time.getTime() < new Date(1970 - 1 - 1).getTime();   //禁止选择1970年以前的日期
-                    } else {
-                        return time.getTime() >= new Date(this.editProjectForm.end_time);
+                    if (this.editProjectForm.end_time) {
+                        return time.getTime() > new Date(this.editProjectForm.end_time).getTime();
                     }
                 }
             },
             editStopOptions: {
                 disabledDate: time => {
-                    return (
-                        time.getTime() <= new Date(this.editProjectForm.begin_time) ||
-                        time.getTime() < new Date(1970 - 1 - 1).getTime()    //禁止选择1970年以前的日期
-                    )
+                    if (this.editProjectForm.begin_time) {
+                        return time.getTime() <= new Date(this.editProjectForm.begin_time).getTime() - 1000 * 60 * 60 * 24;
+                    }
                 }
             },
         }

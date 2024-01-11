@@ -119,19 +119,16 @@ export default {
             },
             editStartOptions: {
                 disabledDate: time => {
-                    if (!this.editCardForm.end_time) {
-                        return time.getTime() < new Date(1970 - 1 - 1).getTime();   //禁止选择1970年以前的日期
-                    } else {
-                        return time.getTime() >= new Date(this.editCardForm.end_time);
+                    if (this.editCardForm.end_time) {
+                        return time.getTime() > new Date(this.editCardForm.end_time).getTime();
                     }
                 }
             },
             editStopOptions: {
                 disabledDate: time => {
-                    return (
-                        time.getTime() < new Date(this.editCardForm.begin_time) ||
-                        time.getTime() < new Date(1970 - 1 - 1).getTime()    //禁止选择1970年以前的日期
-                    )
+                    if (this.editCardForm.begin_time) {
+                        return time.getTime() <= new Date(this.editCardForm.begin_time).getTime() - 1000 * 60 * 60 * 24;
+                    }
                 }
             },
         }
@@ -386,6 +383,7 @@ export default {
             }
             formData.append('json', JSON.stringify(params))
             formData.append('uploadfile', file)
+            console.log(formData);
             apiPost('/V2/index_prod.php', {
                 data: formData,
                 headers: {
